@@ -1,0 +1,121 @@
+﻿"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useCallback, useEffect } from "react";
+import { ChatKitPanel, type FactAction } from "@/components/ChatKitPanel";
+import { useColorScheme } from "@/hooks/useColorScheme";
+
+const prompts = [
+  "Hoe dien ik een reisaanvraag in?",
+  "Geef me de onboarding-checklist.",
+  "Wat is de escalatieflow voor severity 1?",
+];
+
+export default function App() {
+  const { scheme, setScheme, setPreference } = useColorScheme("light");
+
+  useEffect(() => {
+    setPreference("light");
+    setScheme("light");
+  }, [setPreference, setScheme]);
+
+  const handleWidgetAction = useCallback(async (action: FactAction) => {
+    if (process.env.NODE_ENV !== "production") {
+      console.info("[ChatKitPanel] widget action", action);
+    }
+  }, []);
+
+  const handleResponseEnd = useCallback(() => {
+    if (process.env.NODE_ENV !== "production") {
+      console.debug("[ChatKitPanel] response end");
+    }
+  }, []);
+
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-white via-slate-100 to-slate-200 text-slate-900">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col px-6 py-12 sm:px-14">
+        <header className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/acme-logo.svg"
+              alt="Finance RBBLS logo"
+              width={40}
+              height={40}
+              priority
+            />
+            <div>
+              <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                Finance RBBLS
+              </p>
+              <h1 className="text-xl font-semibold text-slate-900">
+                Bedrijfskennis Assistent
+              </h1>
+            </div>
+          </div>
+          <Link
+            href="/dashboard"
+            className="rounded-full border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:text-slate-900"
+          >
+            Gebruiksdashboard
+          </Link>
+        </header>
+
+        <section className="flex flex-1 flex-col items-center justify-center gap-10 py-10 text-center">
+          <div className="space-y-4">
+            <p className="text-sm uppercase tracking-[0.32em] text-slate-500">
+              Interne AI-werkruimte
+            </p>
+            <h2 className="text-[30px] font-semibold tracking-tight text-slate-900 sm:text-[36px]">
+              Alle Finance RBBLS-richtlijnen in één gesprek.
+            </h2>
+            <p className="mx-auto max-w-2xl text-sm text-slate-600 sm:text-base">
+              Stel procesvragen, bekijk playbooks en controleer compliancedetails.
+              Elke reactie is gebaseerd op de meest recente goedgekeurde documenten.
+            </p>
+          </div>
+
+          <div className="w-full max-w-[1080px]">
+            <div className="h-[64vh] min-h-[500px] overflow-hidden rounded-[20px] shadow-[0_35px_80px_-60px_rgba(15,23,42,0.5)]">
+              <ChatKitPanel
+                theme={scheme}
+                onWidgetAction={handleWidgetAction}
+                onResponseEnd={handleResponseEnd}
+                onThemeRequest={setScheme}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 text-sm sm:text-base">
+            {prompts.map((prompt) => (
+              <span
+                key={prompt}
+                className="rounded-full border border-slate-200 bg-white px-5 py-2 text-slate-600 shadow-sm"
+              >
+                {prompt}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        <footer className="border-t border-slate-200 pt-6 text-xs text-slate-500">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/douwebrink-logo.svg"
+                alt="Douwe Brink logo"
+                width={120}
+                height={28}
+              />
+              <p>&copy; {new Date().getFullYear()} Finance RBBLS · Alleen intern gebruik</p>
+            </div>
+            <a href="mailto:ops@Finance RBBLS.com" className="text-slate-500 transition hover:text-slate-700">
+              ops@Finance RBBLS.com
+            </a>
+          </div>
+        </footer>
+      </div>
+    </main>
+  );
+}
+
