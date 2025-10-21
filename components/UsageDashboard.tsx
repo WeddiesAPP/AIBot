@@ -38,7 +38,6 @@ const QUICK_RANGES = [
 ];
 
 const numberFormatter = new Intl.NumberFormat("nl-NL");
-
 const euroFormatter = (currency: string) =>
   new Intl.NumberFormat("nl-NL", {
     style: "currency",
@@ -69,7 +68,7 @@ export function UsageDashboard() {
       }
 
       if (new Date(startDate) > new Date(endDate)) {
-        setError("De begindatum moet vóór of gelijk zijn aan de einddatum.");
+        setError("De begindatum moet voor of gelijk zijn aan de einddatum.");
         setUsage(null);
         setIsLoading(false);
         return;
@@ -158,36 +157,55 @@ export function UsageDashboard() {
   const appliedEndDate = usage?.range.end_date ?? endDate;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-slate-100 to-slate-200 text-slate-900">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col px-6 py-12 sm:px-14">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+    <main className="relative min-h-screen overflow-hidden bg-[#EDF1FF] text-[#0B1220]">
+      <div className="pointer-events-none absolute inset-x-0 -top-48 h-[520px] bg-[linear-gradient(135deg,rgba(36,75,218,0.16)_0%,rgba(129,140,248,0.08)_42%,transparent_76%)] blur-[2px]" />
+      <div className="pointer-events-none absolute -top-32 left-[12%] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[radial-gradient(360px_280px_at_50%_50%,rgba(59,130,246,0.28),transparent_74%)] blur-3xl" />
+      <div className="pointer-events-none absolute top-24 right-[-140px] h-[460px] w-[460px] rounded-full bg-[radial-gradient(380px_320px_at_52%_48%,rgba(14,165,233,0.25),transparent_72%)] blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 left-1/3 h-[500px] w-[520px] -translate-x-1/2 bg-[radial-gradient(500px_340px_at_50%_60%,rgba(67,56,202,0.2),transparent_78%)] blur-[120px]" />
+      <div className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col px-8 py-8 sm:px-14">
+        <header className="flex flex-wrap items-center justify-between gap-8">
+          <div className="flex items-center gap-5">
             <Image
-              src="/acme-logo.svg"
+              src="/red-black.svg"
               alt="Finance RBBLS logo"
-              width={40}
-              height={40}
+              width={70}
+              height={70}
               priority
             />
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+              <p className="text-[0.7rem] uppercase tracking-[0.48em] text-[#6F7BCB]">
                 Finance RBBLS
               </p>
-              <h1 className="text-xl font-semibold text-slate-900">
+              <h1 className="text-[1.28rem] font-semibold leading-tight text-[#0B1220]">
                 Dashboard gebruik & kosten
               </h1>
             </div>
           </div>
           <Link
             href="/"
-            className="rounded-full border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:text-slate-900"
+            className="rounded-full border border-transparent bg-[linear-gradient(120deg,#244BDA_0%,#2563EB_60%,#38BDF8_100%)] px-5 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_-18px_rgba(37,99,235,0.9)] transition hover:shadow-[0_18px_48px_-16px_rgba(37,99,235,0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7D2FE]"
           >
             Terug naar assistent
           </Link>
         </header>
 
-        <section className="flex-1 grid gap-8 py-10">
-          <div className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm sm:p-8">
+        <section className="flex-1 grid gap-7 py-6">
+          <div className="relative overflow-hidden rounded-[34px] px-6 py-10 text-center sm:px-10">
+            <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(140deg,rgba(255,255,255,0.72)_0%,rgba(224,231,255,0.82)_40%,rgba(191,219,254,0.5)_100%)] shadow-[0_24px_110px_rgba(30,64,175,0.16)]" />
+            <p className="text-[0.7rem] uppercase tracking-[0.48em] text-[#4654a3]">
+              Rapportage & inzage
+            </p>
+            <h2 className="mt-4 text-[30px] font-semibold leading-[1.25] text-[#101936] sm:text-[34px]">
+              Houd grip op kosten en gebruik van Finance RBBLS.
+            </h2>
+            <div className="mx-auto flex h-1 w-20 items-center justify-center">
+              <span className="h-1 w-full rounded-full bg-gradient-to-r from-[#6366F1] via-[#38BDF8] to-[#22D3EE]" />
+            </div>
+            <p className="mx-auto mt-4 max-w-2xl text-[0.9rem] leading-relaxed text-[#4B5563] sm:text-[0.95rem]">
+              Bekijk dagelijkse uitgaven, tokenverbruik en activiteitsniveaus. Pas de periode aan of filter op project om nuance te behouden.
+            </p>
+          </div>
+          <div className="rounded-[30px] border border-[#E0E7FF] bg-white/85 p-6 shadow-[0_14px_40px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-8">
             <Controls
               startDate={startDate}
               endDate={endDate}
@@ -222,44 +240,42 @@ export function UsageDashboard() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200 bg-white/70 px-6 py-4 text-sm text-slate-600 sm:flex sm:items-center sm:justify-between">
+        <section className="rounded-[28px] border border-[#E0E7FF] bg-white/80 px-6 py-4 text-sm text-[#475569] shadow-[0_12px_32px_rgba(15,23,42,0.06)] backdrop-blur-sm sm:flex sm:items-center sm:justify-between">
           <p>
             Data getoond van{" "}
             <span className="font-medium text-slate-900">{appliedStartDate}</span>{" "}
             t/m{" "}
             <span className="font-medium text-slate-900">{appliedEndDate}</span>
             {projectId
-              ? ` · Project ${projectId.trim()}`
-              : " · Alle gekoppelde projecten"}
+              ? ` - Project ${projectId.trim()}`
+              : " - Alle gekoppelde projecten"}
           </p>
-          <p className="mt-2 text-xs text-slate-500 sm:mt-0">
+          <p className="mt-2 text-xs text-[#64748B] sm:mt-0">
             De gegevens worden ververst telkens wanneer je het dashboard opent.
           </p>
         </section>
 
-        <footer className="border-t border-slate-200 pt-6 text-xs text-slate-500">
+        <footer className="mt-6 border-t border-slate-200 pt-5 text-xs text-[#8892B0]">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <Image
-                src="/douwebrink-logo.svg"
-                alt="Douwe Brink logo"
+                src="/dblabs.png"
+                alt="DB Labs logo"
                 width={120}
-                height={28}
+                height={32}
               />
-              <p>
-                &copy; {new Date().getFullYear()} Finance RBBLS · Alleen intern gebruik
-              </p>
+              <p>&copy; {new Date().getFullYear()} Finance RBBLS - Alleen intern gebruik</p>
             </div>
             <a
-              href="mailto:ops@financerbbls.com"
-              className="text-slate-500 transition hover:text-slate-700"
+              href="mailto:douwe.brink@gmail.com"
+              className="rounded-full border border-transparent bg-[#E8EEF9] px-4 py-1.5 text-slate-600 transition hover:bg-[#DDE5F5]"
             >
-              ops@financerbbls.com
+              douwe.brink@gmail.com
             </a>
           </div>
         </footer>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -287,7 +303,7 @@ function Controls({
   onProjectChange,
 }: ControlsProps) {
   return (
-    <div className="mb-8 flex flex-col gap-6 border-b border-slate-200 pb-6 lg:flex-row lg:items-end lg:justify-between">
+    <div className="mb-8 flex flex-col gap-6 border-b border-[#E0E7FF] pb-6 lg:flex-row lg:items-end lg:justify-between">
       <div className="flex flex-wrap gap-2">
         {QUICK_RANGES.map((range) => (
           <button
@@ -295,8 +311,8 @@ function Controls({
             type="button"
             className={`rounded-full border px-4 py-2 text-sm transition ${
               isActiveRange(startDate, endDate, range.days)
-                ? "border-slate-900 bg-slate-900 text-white"
-                : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                ? "border-transparent bg-[linear-gradient(120deg,#244BDA_0%,#2563EB_60%,#38BDF8_100%)] text-white shadow-[0_12px_28px_-16px_rgba(37,99,235,0.65)]"
+                : "border-[#E0E7FF] bg-white/70 text-[#1E293B] shadow-[0_10px_22px_-18px_rgba(30,64,175,0.4)] hover:border-[#244BDA]/40 hover:text-[#1E3A8A]"
             }`}
             onClick={() => onSelectRange(range.days)}
             disabled={isLoading && isActiveRange(startDate, endDate, range.days)}
@@ -306,40 +322,48 @@ function Controls({
         ))}
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <label className="flex flex-col text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+        <label className="flex flex-col text-xs font-medium uppercase tracking-[0.2em] text-[#5B6B95]">
           Startdatum
           <input
             type="date"
             value={startDate}
             onChange={(event) => onStartDateChange(event.target.value)}
-            className="mt-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-900 focus:outline-none"
+            className="mt-1 rounded-xl border border-[#E0E7FF] bg-white/80 px-3 py-2 text-sm text-[#1E293B] shadow-[0_8px_20px_-16px_rgba(30,64,175,0.4)] focus:border-[#244BDA] focus:outline-none"
           />
         </label>
-        <label className="flex flex-col text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+        <label className="flex flex-col text-xs font-medium uppercase tracking-[0.2em] text-[#5B6B95]">
           Einddatum
           <input
             type="date"
             value={endDate}
             max={formatDate(new Date())}
             onChange={(event) => onEndDateChange(event.target.value)}
-            className="mt-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-900 focus:outline-none"
+            className="mt-1 rounded-xl border border-[#E0E7FF] bg-white/80 px-3 py-2 text-sm text-[#1E293B] shadow-[0_8px_20px_-16px_rgba(30,64,175,0.4)] focus:border-[#244BDA] focus:outline-none"
           />
         </label>
-        <label className="flex flex-col text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+        <label className="flex flex-col text-xs font-medium uppercase tracking-[0.2em] text-[#5B6B95]">
           Project (optioneel)
           <input
             type="text"
             value={projectId}
             placeholder="proj_..."
             onChange={(event) => onProjectChange(event.target.value)}
-            className="mt-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-900 focus:outline-none"
+            className="mt-1 rounded-xl border border-[#E0E7FF] bg-white/80 px-3 py-2 text-sm text-[#1E293B] shadow-[0_8px_20px_-16px_rgba(30,64,175,0.4)] focus:border-[#244BDA] focus:outline-none"
           />
         </label>
         <button
           type="button"
           onClick={onRefresh}
           disabled={isLoading}
-          className="self-end rounded-full border border-slate-900 px-5 py-2 text-sm font-medium text-slate-900 transition hover:bg-slate-900 hover:text-white disabled:border-slate-200 disabled:text-slate-400"
+          className="self-end rounded-full border border-transparent px-5 py-2 text-sm font-medium text-white transition disabled:border-[#CBD5F5] disabled:bg-[#E0E7FF] disabled:text-[#64748B]"
+          style={{
+            background: isLoading
+              ? undefined
+              : "linear-gradient(120deg,#244BDA 0%,#2563EB 60%,#38BDF8 100%)",
+            boxShadow: isLoading
+              ? undefined
+              : "0 12px 28px -16px rgba(37,99,235,0.6)",
+          }}
         >
           Vernieuw
         </button>

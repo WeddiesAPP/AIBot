@@ -13,22 +13,11 @@ export const STARTER_PROMPTS: StartScreenPrompt[] = [
   },
 ];
 
-export const PLACEHOLDER_INPUT = "Stel hier je vraag...";
+export const PLACEHOLDER_INPUT = "Typ je vraag over Finance RBBLS...";
 
 export const GREETING = "Waar kan ik je vandaag mee helpen?";
 
-export const getThemeConfig = (theme: ColorScheme): ThemeOption => ({
-  color: {
-    grayscale: {
-      hue: 220,
-      tint: 6,
-      shade: theme === "dark" ? -1 : -4,
-    },
-    accent: {
-      primary: theme === "dark" ? "#f1f5f9" : "#0f172a",
-      level: 1,
-    },
-  },
+export const getThemeConfig = (_theme: ColorScheme): ThemeOption => ({
   radius: "round",
   // Add other theme options here
   // chatkit.studio/playground to explore config options

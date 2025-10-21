@@ -24,6 +24,8 @@ type ChatKitPanelProps = {
   onWidgetAction: (action: FactAction) => Promise<void>;
   onResponseEnd: () => void;
   onThemeRequest: (scheme: ColorScheme) => void;
+  selectedPrompt?: string | null;
+  onPromptConsumed?: () => void;
 };
 
 type ErrorState = {
@@ -48,6 +50,8 @@ export function ChatKitPanel({
   onWidgetAction,
   onResponseEnd,
   onThemeRequest,
+  selectedPrompt,
+  onPromptConsumed,
 }: ChatKitPanelProps) {
   const processedFacts = useRef(new Set<string>());
   const [errors, setErrors] = useState<ErrorState>(() => createInitialErrors());
@@ -330,8 +334,52 @@ export function ChatKitPanel({
     },
   });
 
+  const { sendUserMessage, setComposerValue, focusComposer } = chatkit;
+
   const activeError = errors.session ?? errors.integration;
   const blockingError = errors.script ?? activeError;
+
+  useEffect(() => {
+    if (!selectedPrompt || isInitializingSession || blockingError) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    const processPrompt = async () => {
+      try {
+        await setComposerValue({ text: selectedPrompt });
+        try {
+          await focusComposer();
+        } catch (error) {
+          if (isDev) {
+            console.debug("[ChatKitPanel] focusComposer failed", error);
+          }
+        }
+        await sendUserMessage({ text: selectedPrompt });
+      } catch (error) {
+        console.error("Failed to process quick prompt", error);
+      } finally {
+        if (!isCancelled) {
+          onPromptConsumed?.();
+        }
+      }
+    };
+
+    void processPrompt();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [
+    selectedPrompt,
+    isInitializingSession,
+    blockingError,
+    setComposerValue,
+    focusComposer,
+    sendUserMessage,
+    onPromptConsumed,
+  ]);
 
   if (isDev) {
     console.debug("[ChatKitPanel] render state", {
@@ -344,7 +392,7 @@ export function ChatKitPanel({
   }
 
   return (
-    <div className="relative pb-8 flex h-full min-h-[520px] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
+    <div className="relative z-10 flex h-full min-h-[520px] w-full rounded-[18px] flex-col overflow-hidden bg-white pb-8 text-[#1F2937] transition-colors shadow-[0_10px_30px_rgba(2,8,23,0.06)] dark:bg-slate-900">
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}

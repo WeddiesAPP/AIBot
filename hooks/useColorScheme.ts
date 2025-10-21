@@ -6,7 +6,7 @@ export type ColorScheme = "light" | "dark";
 export type ColorSchemePreference = ColorScheme | "system";
 
 const STORAGE_KEY = "chatkit-color-scheme";
-const PREFERS_DARK_QUERY = "(prefers-color-scheme: dark)";
+const PREFERS_DARK_QUERY = "(prefers-color-scheme: light)";
 
 type MediaQueryCallback = (event: MediaQueryListEvent) => void;
 

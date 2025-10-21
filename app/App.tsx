@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChatKitPanel, type FactAction } from "@/components/ChatKitPanel";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
@@ -14,6 +14,7 @@ const prompts = [
 
 export default function App() {
   const { scheme, setScheme, setPreference } = useColorScheme("light");
+  const [queuedPrompt, setQueuedPrompt] = useState<string | null>(null);
 
   useEffect(() => {
     setPreference("light");
@@ -32,94 +33,155 @@ export default function App() {
     }
   }, []);
 
+  const handlePromptSelect = useCallback((prompt: string) => {
+    setQueuedPrompt(prompt);
+  }, []);
+
+  const handlePromptConsumed = useCallback(() => {
+    setQueuedPrompt(null);
+  }, []);
+
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-slate-100 to-slate-200 text-slate-900">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col px-6 py-12 sm:px-14">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+    <main className="relative min-h-screen overflow-hidden bg-[#EDF1FF] text-[#0B1220]">
+      <div className="pointer-events-none absolute inset-x-0 -top-48 h-[520px] bg-[linear-gradient(135deg,rgba(36,75,218,0.16)_0%,rgba(129,140,248,0.08)_42%,transparent_76%)] blur-[2px]" />
+      <div className="pointer-events-none absolute -top-32 left-[12%] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[radial-gradient(360px_280px_at_50%_50%,rgba(59,130,246,0.28),transparent_74%)] blur-3xl" />
+      <div className="pointer-events-none absolute top-24 right-[-140px] h-[460px] w-[460px] rounded-full bg-[radial-gradient(380px_320px_at_52%_48%,rgba(14,165,233,0.25),transparent_72%)] blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 left-1/3 h-[500px] w-[520px] -translate-x-1/2 bg-[radial-gradient(500px_340px_at_50%_60%,rgba(67,56,202,0.2),transparent_78%)] blur-[120px]" />
+      <div className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col px-8 py-8 sm:px-14">
+        <header className="flex flex-wrap items-center justify-between gap-8">
+          <div className="flex items-center gap-5">
             <Image
-              src="/acme-logo.svg"
+              src="/red-black.svg"
               alt="Finance RBBLS logo"
-              width={40}
-              height={40}
+              width={74}
+              height={74}
               priority
             />
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+              <p className="text-[0.76rem] uppercase tracking-[0.48em] text-[#6F7BCB]">
                 Finance RBBLS
               </p>
-              <h1 className="text-xl font-semibold text-slate-900">
+              <h1 className="text-[1.32rem] font-semibold leading-tight text-[#0B1220]">
                 Bedrijfskennis Assistent
               </h1>
             </div>
           </div>
           <Link
             href="/dashboard"
-            className="rounded-full border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:text-slate-900"
+            className="rounded-full border border-transparent bg-[linear-gradient(120deg,#244BDA_0%,#2563EB_60%,#38BDF8_100%)] px-5 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_-18px_rgba(37,99,235,0.9)] transition hover:shadow-[0_18px_48px_-16px_rgba(37,99,235,0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7D2FE]"
           >
             Gebruiksdashboard
           </Link>
         </header>
 
-        <section className="flex flex-1 flex-col items-center justify-center gap-10 py-10 text-center">
-          <div className="space-y-4">
-            <p className="text-sm uppercase tracking-[0.32em] text-slate-500">
+        <section className="relative flex flex-1 flex-col items-center justify-center gap-6 py-6 text-center">
+          <div className="pointer-events-none absolute inset-x-4 top-1 -z-10 h-[280px] rounded-[38px] bg-[linear-gradient(140deg,rgba(255,255,255,0.72)_0%,rgba(224,231,255,0.82)_38%,rgba(191,219,254,0.5)_100%)] shadow-[0_24px_110px_rgba(30,64,175,0.15)] sm:inset-x-12" />
+          <div className="space-y-4 rounded-[30px] px-6 py-9 animate-fade-in sm:px-12">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#c7d2ff] bg-white/75 px-5 py-1 text-xs font-semibold uppercase tracking-[0.34em] text-[#4654a3] shadow-[0_12px_28px_-18px_rgba(30,58,138,0.55)]">
               Interne AI-werkruimte
-            </p>
-            <h2 className="text-[30px] font-semibold tracking-tight text-slate-900 sm:text-[36px]">
-              Alle Finance RBBLS-richtlijnen in één gesprek.
+              <span className="h-2 w-2 rounded-full bg-[#244BDA]" />
+            </span>
+            <h2 className="text-[30px] font-semibold leading-[1.22] text-[#101936] sm:text-[34px]">
+              Alle Finance RBBLS-richtlijnen in een helder overzicht.
             </h2>
-            <p className="mx-auto max-w-2xl text-sm text-slate-600 sm:text-base">
-              Stel procesvragen, bekijk playbooks en controleer compliancedetails.
-              Elke reactie is gebaseerd op de meest recente goedgekeurde documenten.
+            <p className="mx-auto max-w-2xl text-[0.9rem] leading-relaxed text-[#4B5563] sm:text-[0.95rem]">
+              Stel procesvragen, browse playbooks of controleer compliancedetails. Elk antwoord blijft actueel dankzij de meest recente en intern goedgekeurde documenten.
             </p>
+            <div className="mx-auto flex h-1 w-20 items-center justify-center">
+              <span className="h-1 w-full rounded-full bg-gradient-to-r from-[#6366F1] via-[#38BDF8] to-[#22D3EE]" />
+            </div>
           </div>
 
-          <div className="w-full max-w-[1080px]">
-            <div className="h-[64vh] min-h-[500px] overflow-hidden rounded-[20px] shadow-[0_35px_80px_-60px_rgba(15,23,42,0.5)]">
+          <div className="w-full max-w-[1024px] transition-transform duration-300 ease-out hover:-translate-y-1">
+            <div className="group relative h-[520px] overflow-hidden rounded-[22px] border border-[#E0E7FF] bg-white shadow-[0_14px_40px_rgba(15,23,42,0.08)] transition-shadow duration-300 focus-within:shadow-[0_20px_60px_rgba(37,99,235,0.18)] hover:shadow-[0_18px_56px_rgba(37,99,235,0.14)]">
+              <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(620px_320px_at_50%_46%,rgba(59,130,246,0.16),transparent_82%)] opacity-90" />
+              <span className="absolute inset-x-0 top-0 z-20 h-[3px] bg-[linear-gradient(120deg,#1E3A8A_0%,#2563EB_50%,#38BDF8_100%)]" />
               <ChatKitPanel
                 theme={scheme}
                 onWidgetAction={handleWidgetAction}
                 onResponseEnd={handleResponseEnd}
                 onThemeRequest={setScheme}
+                selectedPrompt={queuedPrompt}
+                onPromptConsumed={handlePromptConsumed}
               />
             </div>
+            <p className="mt-3 text-[0.72rem] uppercase tracking-[0.38em] text-[#5B6B95]">
+              Powered by DB Labs
+            </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 text-sm sm:text-base">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-[0.95rem]">
             {prompts.map((prompt) => (
-              <span
+              <button
                 key={prompt}
-                className="rounded-full border border-slate-200 bg-white px-5 py-2 text-slate-600 shadow-sm"
+                type="button"
+                onClick={() => handlePromptSelect(prompt)}
+                className="rounded-full border border-transparent bg-gradient-to-r from-[#E0E7FF] via-[#DBEAFE] to-[#E0F2FE] px-6 py-2 text-[#1E293B] shadow-[0_14px_28px_-16px_rgba(30,64,175,0.6)] transition-transform duration-200 hover:-translate-y-[2px] hover:border-[#244BDA]/40 hover:from-[#DBE2FF] hover:to-[#D1F2FF] hover:text-[#1E3A8A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#244BDA]"
               >
                 {prompt}
-              </span>
+              </button>
             ))}
           </div>
         </section>
 
-        <footer className="border-t border-slate-200 pt-6 text-xs text-slate-500">
+        <footer className="mt-6 border-t border-slate-200 pt-5 text-xs text-[#8892B0]">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <Image
-                src="/douwebrink-logo.svg"
-                alt="Douwe Brink logo"
+                src="/dblabs.png"
+                alt="DB Labs logo"
                 width={120}
-                height={28}
+                height={32}
               />
-              <p>
-                &copy; {new Date().getFullYear()} Finance RBBLS · Alleen intern gebruik
-              </p>
+              <p>&copy; {new Date().getFullYear()} Finance RBBLS - Alleen intern gebruik</p>
             </div>
             <a
-              href="mailto:ops@financerbbls.com"
-              className="text-slate-500 transition hover:text-slate-700"
+              href="mailto:douwe.brink@gmail.com"
+              className="rounded-full border border-transparent bg-[#E7ECFF] px-4 py-1.5 text-[#244BDA] transition hover:bg-[#DDE5F5]"
             >
-              ops@financerbbls.com
+              douwe.brink@gmail.com
             </a>
           </div>
         </footer>
       </div>
+
+      <div className="pointer-events-none absolute bottom-8 left-8 text-[4.5rem] text-[#1E3A8A]/10 sm:text-[6rem]">
+        🤖
+      </div>
+
+      <style jsx global>{`
+        @keyframes fade-in-up {
+          0% {
+            opacity: 0;
+            transform: translateY(16px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in-up 0.65s ease-out both;
+        }
+
+        openai-chatkit button[aria-label="Send"],
+        openai-chatkit button[aria-label="Verzenden"] {
+          transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        openai-chatkit button[aria-label="Send"]:hover,
+        openai-chatkit button[aria-label="Verzenden"]:hover {
+          transform: scale(1.05) rotate(-3deg);
+          box-shadow: 0 8px 18px rgba(36, 75, 218, 0.16);
+        }
+
+        openai-chatkit [data-speaker="user"],
+        openai-chatkit [data-variant="outgoing"] {
+          background-color: #f0f4ff !important;
+          color: #1f2937 !important;
+        }
+      `}</style>
     </main>
   );
 }
