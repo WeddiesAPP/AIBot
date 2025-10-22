@@ -52,18 +52,28 @@ const euroFormatter = (currency: string) =>
     maximumFractionDigits: 2,
   });
 
-export function UsageDashboard() {
+type UsageDashboardProps = {
+  initialProjectId?: string;
+  companyName?: string;
+};
+
+export function UsageDashboard({
+  initialProjectId,
+  companyName,
+}: UsageDashboardProps = {}) {
   const initialEndDate = formatDate(new Date());
   const initialStartDate = formatDate(offsetDays(new Date(), -29));
-  const initialProjectId = process.env.NEXT_PUBLIC_OPENAI_PROJECT_ID ?? "";
+  const defaultProjectId =
+    initialProjectId ?? process.env.NEXT_PUBLIC_OPENAI_PROJECT_ID ?? "";
+  const companyLabel = companyName ?? "Finance RBBLS";
 
   const [startDate, setStartDate] = useState(initialStartDate);
   const [endDate, setEndDate] = useState(initialEndDate);
-  const [projectId, setProjectId] = useState(initialProjectId);
+  const [projectId, setProjectId] = useState(defaultProjectId);
 
   const [queryStartDate, setQueryStartDate] = useState(initialStartDate);
   const [queryEndDate, setQueryEndDate] = useState(initialEndDate);
-  const [queryProjectId, setQueryProjectId] = useState(initialProjectId);
+  const [queryProjectId, setQueryProjectId] = useState(defaultProjectId);
   const [refreshCounter, setRefreshCounter] = useState(0);
   const [usage, setUsage] = useState<UsageResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -188,7 +198,7 @@ export function UsageDashboard() {
                         />
                         <div>
                         <p className="text-[0.76rem] uppercase tracking-[0.48em] text-[#6F7BCB]">
-                Finance RBBLS
+                {companyLabel}
               </p>
               <h1 className="text-[1.32rem] font-semibold leading-tight text-[#0B1220]">
                 Dashboard gebruik & kosten
@@ -210,7 +220,7 @@ export function UsageDashboard() {
               <span className="h-2 w-2 rounded-full bg-[#244BDA]" />
             </span>
             <h2 className="text-[21px] font-semibold leading-[1.22] text-[#101936] sm:text-[21px]">
-              Houd grip op kosten en gebruik van Finance RBBLS
+              Houd grip op kosten en gebruik van {companyLabel}
             </h2>
             <p className="mx-auto max-w-2xl text-[0.9rem] leading-relaxed text-[#4B5563] sm:text-[0.95rem]">
               Bekijk dagelijkse uitgaven, tokenverbruik en activiteitsniveaus. Pas de periode aan of filter op project om nuance te behouden.
@@ -276,7 +286,7 @@ export function UsageDashboard() {
                 width={120}
                 height={32}
               />
-              <p>&copy; {new Date().getFullYear()} Finance RBBLS - Alleen intern gebruik</p>
+              <p>&copy; {new Date().getFullYear()} {companyLabel} - Alleen intern gebruik</p>
             </div>
             <a
               href="mailto:douwe.brink@gmail.com"

@@ -6,13 +6,23 @@ import { useCallback, useEffect, useState } from "react";
 import { ChatKitPanel, type FactAction } from "@/components/ChatKitPanel";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
-const prompts = [
+const FALLBACK_PROMPTS = [
   "Hoe boek ik een factuur?",
   "Geef me de onboarding-checklist.",
   "Wat is de DevOps-procedure voor PowerBI?",
 ];
 
-export default function App() {
+type AppProps = {
+  companyName: string;
+  contactEmail?: string;
+  prompts?: string[];
+};
+
+export default function App({
+  companyName,
+  contactEmail = "douwe.brink@gmail.com",
+  prompts = FALLBACK_PROMPTS,
+}: AppProps) {
   const { scheme, setScheme, setPreference } = useColorScheme("light");
   const [queuedPrompt, setQueuedPrompt] = useState<string | null>(null);
 
@@ -55,7 +65,7 @@ export default function App() {
             />
             <div>
               <p className="text-[0.76rem] uppercase tracking-[0.48em] text-[#6F7BCB]">
-                Finance RBBLS
+                {companyName}
               </p>
               <h1 className="text-[1.32rem] font-semibold leading-tight text-[#0B1220]">
                 Bedrijfskennis Assistent
@@ -77,7 +87,7 @@ export default function App() {
               <span className="h-2 w-2 rounded-full bg-[#20b931] animate-pulse"  />
             </span>
             <h2 className="text-[21px] font-semibold leading-[1.22] text-[#101936] sm:text-[21px]">
-              Alle Finance RBBLS-richtlijnen in een helder overzicht.
+              Alle {companyName}-richtlijnen in een helder overzicht.
             </h2>
             <p className="mx-auto max-w-2xl text-[0.9rem] leading-relaxed text-[#4B5563] sm:text-[0.95rem]">
               Stel procesvragen, browse playbooks of controleer compliancedetails. Elk antwoord blijft actueel dankzij de meest recente en intern goedgekeurde documenten.
@@ -85,6 +95,18 @@ export default function App() {
             <div className="mx-auto h-1 w-20 rounded-full bg-[#244BDA]" />
           </div>
 
+          <div className="flex flex-wrap items-center justify-center gap-4 text-[0.95rem]">
+            {prompts.map((prompt) => (
+              <button
+                key={prompt}
+                type="button"
+                onClick={() => handlePromptSelect(prompt)}
+                className="rounded-full border border-transparent bg-[#E0E7FF] px-6 py-2 text-[#1E293B] shadow-[0_14px_28px_-16px_rgba(30,64,175,0.6)] transition-transform duration-200 hover:-translate-y-[2px] hover:border-[#244BDA]/40 hover:bg-[#DBE2FF] hover:text-[#1E3A8A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#244BDA]"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
           <div className="w-full max-w-[1024px] transition-transform duration-300 ease-out hover:-translate-y-1">
             <div className="group relative h-[520px] overflow-hidden rounded-[22px] border border-[#E0E7FF] bg-white shadow-[0_14px_40px_rgba(15,23,42,0.08)] transition-shadow duration-300 focus-within:shadow-[0_20px_60px_rgba(37,99,235,0.18)] hover:shadow-[0_18px_56px_rgba(37,99,235,0.14)]">
               <ChatKitPanel
@@ -101,18 +123,7 @@ export default function App() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 text-[0.95rem]">
-            {prompts.map((prompt) => (
-              <button
-                key={prompt}
-                type="button"
-                onClick={() => handlePromptSelect(prompt)}
-                className="rounded-full border border-transparent bg-[#E0E7FF] px-6 py-2 text-[#1E293B] shadow-[0_14px_28px_-16px_rgba(30,64,175,0.6)] transition-transform duration-200 hover:-translate-y-[2px] hover:border-[#244BDA]/40 hover:bg-[#DBE2FF] hover:text-[#1E3A8A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#244BDA]"
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
+          
         </section>
 
         <footer className="mt-6 border-t border-slate-200 pt-5 text-xs text-[#8892B0]">
@@ -124,13 +135,13 @@ export default function App() {
                 width={120}
                 height={32}
               />
-              <p>&copy; {new Date().getFullYear()} Finance RBBLS - Alleen intern gebruik</p>
+              <p>&copy; {new Date().getFullYear()} {companyName} - Alleen intern gebruik</p>
             </div>
             <a
-              href="mailto:douwe.brink@gmail.com"
+              href={`mailto:${contactEmail}`}
               className="rounded-full border border-transparent bg-[#E7ECFF] px-4 py-1.5 text-[#244BDA] transition hover:bg-[#DDE5F5]"
             >
-              douwe.brink@gmail.com
+              {contactEmail}
             </a>
           </div>
         </footer>

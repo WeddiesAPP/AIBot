@@ -1,43 +1,65 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import {
+  getAuthUsers,
+  getSessionCookieName,
+  verifySessionToken,
+} from "@/lib/auth";
 
-const USERNAME = process.env.BASIC_AUTH_USERNAME;
-const PASSWORD = process.env.BASIC_AUTH_PASSWORD;
+const PUBLIC_PATHS = new Set<string>([
+  "/login",
+  "/favicon.ico",
+  "/icon.ico",
+  "/manifest.json",
+]);
 
-const MESSAGE =
-  "Authentication required. Please supply the correct username and password.";
+const STATIC_PREFIXES = ["/_next", "/public", "/assets"];
 
-/**
- * Prompt for basic auth credentials on all application routes.
- */
-export function middleware(request: NextRequest) {
-  // Skip protection if credentials are not configured.
-  if (!USERNAME || !PASSWORD) {
+export async function middleware(request: NextRequest) {
+  const usersConfigured = getAuthUsers().length > 0;
+  const hasSecret = Boolean(process.env.AUTH_SECRET);
+
+  if (!usersConfigured || !hasSecret) {
     return NextResponse.next();
   }
 
-  const authHeader = request.headers.get("authorization");
+  const { pathname } = request.nextUrl;
 
-  if (authHeader?.startsWith("Basic ")) {
-    try {
-      const [, encodedCredentials] = authHeader.split(" ");
-      const decoded = atob(encodedCredentials);
-      const [user, pass] = decoded.split(":");
-
-      if (user === USERNAME && pass === PASSWORD) {
-        return NextResponse.next();
-      }
-    } catch {
-      // fall through to unauthorized response
-    }
+  if (
+    PUBLIC_PATHS.has(pathname) ||
+    STATIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+  ) {
+    return NextResponse.next();
   }
 
-  return new NextResponse(MESSAGE, {
-    status: 401,
-    headers: {
-      "WWW-Authenticate": 'Basic realm="Secure Area", charset="UTF-8"',
-    },
-  });
+  const sessionCookieName = getSessionCookieName();
+  const sessionCookie = request.cookies.get(sessionCookieName)?.value;
+  const user = await verifySessionToken(sessionCookie);
+
+  if (user) {
+    if (pathname === "/login") {
+      return NextResponse.redirect(new URL(user.dashboard, request.url));
+    }
+    if (pathname === "/dashboard") {
+      return NextResponse.redirect(new URL(user.dashboard, request.url));
+    }
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/api")) {
+    return NextResponse.json(
+      { error: "Niet geautoriseerd" },
+      { status: 401 }
+    );
+  }
+
+  const loginUrl = new URL("/login", request.url);
+  if (pathname !== "/login") {
+    const requested =
+      request.nextUrl.pathname + request.nextUrl.search;
+    loginUrl.searchParams.set("from", requested);
+  }
+  return NextResponse.redirect(loginUrl);
 }
 
 export const config = {
