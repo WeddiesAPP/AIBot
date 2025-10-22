@@ -23,7 +23,7 @@ type ChatKitPanelProps = {
   theme: ColorScheme;
   onWidgetAction: (action: FactAction) => Promise<void>;
   onResponseEnd: () => void;
-  onThemeRequest: (scheme: ColorScheme) => void;
+  //onThemeRequest: (scheme: ColorScheme) => void;
   selectedPrompt?: string | null;
   onPromptConsumed?: () => void;
 };
@@ -49,7 +49,7 @@ export function ChatKitPanel({
   theme,
   onWidgetAction,
   onResponseEnd,
-  onThemeRequest,
+ // onThemeRequest,
   selectedPrompt,
   onPromptConsumed,
 }: ChatKitPanelProps) {
@@ -295,7 +295,7 @@ export function ChatKitPanel({
           if (isDev) {
             console.debug("[ChatKitPanel] switch_theme", requested);
           }
-          onThemeRequest(requested);
+         // onThemeRequest(requested);
           return { success: true };
         }
         return { success: false };

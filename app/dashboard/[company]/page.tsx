@@ -8,15 +8,14 @@ import {
 } from "@/lib/auth";
 
 type DashboardPageProps = {
-  params: {
-    company: string;
-  };
+  params: Promise<{ company: string }>;
 };
 
 export default async function CompanyDashboardPage({
   params,
 }: DashboardPageProps) {
-  const config = findUserByCompany(params.company);
+  const { company } = await params;
+  const config = findUserByCompany(company);
   if (!config) {
     notFound();
   }

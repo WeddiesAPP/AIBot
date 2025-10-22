@@ -12,7 +12,7 @@ export const STARTER_PROMPTS: StartScreenPrompt[] = [
     icon: "circle-question",
   },
 ];
-
+  
 export const PLACEHOLDER_INPUT = "Typ je vraag over Finance RBBLS…";
 
 export const GREETING = "Waar kan ik je vandaag mee helpen?";
@@ -20,17 +20,17 @@ export const GREETING = "Waar kan ik je vandaag mee helpen?";
 export const getThemeConfig = (theme: ColorScheme): ThemeOption => ({
   color: {
     grayscale: {
-      hue: 220,
-      tint: 6,
-      shade: theme === "light" ? -1 : -4,
+      hue: 223,
+      tint: theme === "light" ? 5 : 6,
+      
     },
     accent: {
-      primary: theme === "light" ? "#f1f5f9" : "#244BDA",
-      level: theme === "light" ? 1 : 0,
+      primary: theme === "light" ? "#244BDA" : "#93C5FD",
+      level: theme === "light" ? 0 : 2,
     },
     surface: {
-      background: theme === "light" ? "#0f172a" : "#ffffff",
-      foreground: theme === "light" ? "#f8fafc" : "#1F2937",
+      background: theme === "light" ? "#FFFFFF" : "#0F172A",
+      foreground: theme === "light" ? "#1F2937" : "#E2E8F0",
     },
   },
   radius: "round",

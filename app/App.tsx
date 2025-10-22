@@ -113,7 +113,7 @@ export default function App({
                 theme={scheme}
                 onWidgetAction={handleWidgetAction}
                 onResponseEnd={handleResponseEnd}
-                onThemeRequest={setScheme}
+                //onThemeRequest={setScheme}
                 selectedPrompt={queuedPrompt}
                 onPromptConsumed={handlePromptConsumed}
               />
@@ -170,17 +170,7 @@ export default function App({
           transition: transform 0.18s ease, box-shadow 0.18s ease;
         }
 
-        openai-chatkit button[aria-label="Send"]:hover,
-        openai-chatkit button[aria-label="Verzenden"]:hover {
-          transform: scale(1.05) rotate(-3deg);
-          box-shadow: 0 8px 18px rgba(36, 75, 218, 0.16);
-        }
-
-        openai-chatkit [data-speaker="user"],
-        openai-chatkit [data-variant="outgoing"] {
-          background-color: #f0f4ff !important;
-          color: #1f2937 !important;
-        }
+       
       `}</style>
     </main>
   );

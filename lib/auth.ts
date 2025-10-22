@@ -130,6 +130,7 @@ export function verifyCredentials(
   }
 
   const { password: _password, ...rest } = match;
+  void _password;
   return rest;
 }
 
@@ -164,7 +165,8 @@ function fromBase64Url(base64url: string): Uint8Array {
   let base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
   base64 += "===".slice((base64.length + 3) % 4);
   if (globalBuffer) {
-    return new Uint8Array(globalBuffer.from(base64, "base64"));
+    const buf = globalBuffer.from(base64, "base64");
+    return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
   }
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
@@ -245,7 +247,8 @@ export async function verifySessionToken(
   }
 
   const key = await getHmacKey(secret);
-  const provided = fromBase64Url(signature);
+  const providedRaw = fromBase64Url(signature);
+  const provided = new Uint8Array(providedRaw);
 
   const isValid = await crypto.subtle.verify(
     "HMAC",
@@ -264,6 +267,7 @@ export async function verifySessionToken(
   }
 
   const { password: _password, ...user } = match;
+  void _password;
   return user;
 }
 
