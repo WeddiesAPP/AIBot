@@ -26,8 +26,8 @@ export default async function LoginPage() {
             <img
               src="/dblabs.png"
               alt="DB Labs logo"
-              width={140}
-              height={40}
+              width={120}
+              height='auto'
               loading="eager"
               className="h-10 w-[140px]"
             />
@@ -62,7 +62,7 @@ export default async function LoginPage() {
                 src="/dblabs.png"
                 alt="DB Labs logo"
                 width={120}
-                height={32}
+                height='auto'
                 loading="eager"
                 className="h-8 w-[120px]"
               />

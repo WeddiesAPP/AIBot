@@ -23,7 +23,7 @@ export function LoginForm() {
           src="/dblabs.png"
           alt="DB Labs logo"
           width={140}
-          height={36}
+          height='auto'
           loading="eager"
           className="h-9 w-[140px]"
         />
