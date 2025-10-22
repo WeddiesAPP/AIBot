@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LoginForm } from "./LoginForm";
@@ -24,13 +23,13 @@ export default async function LoginPage() {
       <div className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col px-8 py-10 sm:px-14">
         <header className="flex flex-wrap items-center justify-between gap-8">
           <div className="flex items-center gap-5">
-            <Image
+            <img
               src="/dblabs.png"
               alt="DB Labs logo"
               width={140}
               height={40}
-              priority
-              unoptimized
+              loading="eager"
+              className="h-10 w-[140px]"
             />
             <div>
               <p className="text-[0.76rem] uppercase tracking-[0.48em] text-[#6F7BCB]">
@@ -59,12 +58,13 @@ export default async function LoginPage() {
         <footer className="mt-8 border-t border-slate-200 pt-5 text-xs text-[#8892B0]">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <Image
+              <img
                 src="/dblabs.png"
                 alt="DB Labs logo"
                 width={120}
                 height={32}
-                unoptimized
+                loading="eager"
+                className="h-8 w-[120px]"
               />
               <p>&copy; {new Date().getFullYear()} DBLabs - Alleen intern gebruik</p>
             </div>

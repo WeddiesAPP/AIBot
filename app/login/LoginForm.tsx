@@ -1,6 +1,4 @@
 "use client";
-
-import Image from "next/image";
 import { useActionState, useId } from "react";
 import { authenticateAction } from "./actions";
 import type { LoginFormState } from "./actions";
@@ -21,13 +19,13 @@ export function LoginForm() {
       className="w-full max-w-md space-y-6 rounded-[26px] border border-[#E0E7FF] bg-white px-8 py-10 text-left shadow-[0_18px_56px_rgba(37,99,235,0.14)] sm:px-12"
     >
       <div className="flex flex-col items-center gap-4 text-center">
-        <Image
+        <img
           src="/dblabs.png"
           alt="DB Labs logo"
           width={140}
           height={36}
-          priority
-          unoptimized
+          loading="eager"
+          className="h-9 w-[140px]"
         />
         
       </div>
