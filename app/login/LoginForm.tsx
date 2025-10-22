@@ -27,6 +27,7 @@ export function LoginForm() {
           width={140}
           height={36}
           priority
+          unoptimized
         />
         
       </div>

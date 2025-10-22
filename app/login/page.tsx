@@ -30,6 +30,7 @@ export default async function LoginPage() {
               width={140}
               height={40}
               priority
+              unoptimized
             />
             <div>
               <p className="text-[0.76rem] uppercase tracking-[0.48em] text-[#6F7BCB]">
@@ -63,6 +64,7 @@ export default async function LoginPage() {
                 alt="DB Labs logo"
                 width={120}
                 height={32}
+                unoptimized
               />
               <p>&copy; {new Date().getFullYear()} DBLabs - Alleen intern gebruik</p>
             </div>
