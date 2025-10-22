@@ -133,135 +133,93 @@ export function ChatKitPanel({
     };
   }, [scriptStatus, setErrorState]);
 
-  const isWorkflowConfigured = Boolean(
-    WORKFLOW_ID && !WORKFLOW_ID.startsWith("wf_replace")
-  );
+  const isWorkflowConfigured = Boolean(WORKFLOW_ID);
 
-  useEffect(() => {
-    if (!isWorkflowConfigured && isMountedRef.current) {
-      setErrorState({
-        session: "Set NEXT_PUBLIC_CHATKIT_WORKFLOW_ID in your .env.local file.",
-        retryable: false,
-      });
-      setIsInitializingSession(false);
+  const getClientSecret = useCallback(async () => {
+    if (!isWorkflowConfigured) {
+      const error =
+        "ChatKit workflow is not configured. Set NEXT_PUBLIC_CHATKIT_WORKFLOW_ID.";
+      setErrorState({ integration: error, retryable: false });
+      throw new Error(error);
     }
-  }, [isWorkflowConfigured, setErrorState]);
 
-  const handleResetChat = useCallback(() => {
-    processedFacts.current.clear();
-    if (isBrowser) {
-      setScriptStatus(
-        window.customElements?.get("openai-chatkit") ? "ready" : "pending"
-      );
-    }
     setIsInitializingSession(true);
-    setErrors(createInitialErrors());
-    setWidgetInstanceKey((prev) => prev + 1);
-  }, []);
+    setErrorState({ session: null });
 
-  const getClientSecret = useCallback(
-    async (currentSecret: string | null) => {
+    try {
+      const response = await fetch(CREATE_SESSION_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          workflow: { id: WORKFLOW_ID },
+          chatkit_configuration: {
+            // enable attachments
+            file_upload: {
+              enabled: true,
+            },
+          },
+        }),
+      });
+
+      const raw = await response.text();
+
       if (isDev) {
-        console.info("[ChatKitPanel] getClientSecret invoked", {
-          currentSecretPresent: Boolean(currentSecret),
-          workflowId: WORKFLOW_ID,
-          endpoint: CREATE_SESSION_ENDPOINT,
+        console.info("[ChatKitPanel] createSession response", {
+          status: response.status,
+          ok: response.ok,
+          bodyPreview: raw.slice(0, 1600),
         });
       }
 
-      if (!isWorkflowConfigured) {
-        const detail =
-          "Set NEXT_PUBLIC_CHATKIT_WORKFLOW_ID in your .env.local file.";
-        if (isMountedRef.current) {
-          setErrorState({ session: detail, retryable: false });
-          setIsInitializingSession(false);
+      let data: Record<string, unknown> = {};
+      if (raw) {
+        try {
+          data = JSON.parse(raw) as Record<string, unknown>;
+        } catch (parseError) {
+          console.error(
+            "Failed to parse create-session response",
+            parseError
+          );
         }
+      }
+
+      if (!response.ok) {
+        const detail = extractErrorDetail(data, response.statusText);
+        console.error("Create session request failed", {
+          status: response.status,
+          body: data,
+        });
         throw new Error(detail);
       }
 
+      const clientSecret = data?.client_secret as string | undefined;
+      if (!clientSecret) {
+        throw new Error("Missing client secret in response");
+      }
+
       if (isMountedRef.current) {
-        if (!currentSecret) {
-          setIsInitializingSession(true);
-        }
-        setErrorState({ session: null, integration: null, retryable: false });
+        setErrorState({ session: null, integration: null });
       }
 
-      try {
-        const response = await fetch(CREATE_SESSION_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            workflow: { id: WORKFLOW_ID },
-            chatkit_configuration: {
-              // enable attachments
-              file_upload: {
-                enabled: true,
-              },
-            },
-          }),
-        });
-
-        const raw = await response.text();
-
-        if (isDev) {
-          console.info("[ChatKitPanel] createSession response", {
-            status: response.status,
-            ok: response.ok,
-            bodyPreview: raw.slice(0, 1600),
-          });
-        }
-
-        let data: Record<string, unknown> = {};
-        if (raw) {
-          try {
-            data = JSON.parse(raw) as Record<string, unknown>;
-          } catch (parseError) {
-            console.error(
-              "Failed to parse create-session response",
-              parseError
-            );
-          }
-        }
-
-        if (!response.ok) {
-          const detail = extractErrorDetail(data, response.statusText);
-          console.error("Create session request failed", {
-            status: response.status,
-            body: data,
-          });
-          throw new Error(detail);
-        }
-
-        const clientSecret = data?.client_secret as string | undefined;
-        if (!clientSecret) {
-          throw new Error("Missing client secret in response");
-        }
-
-        if (isMountedRef.current) {
-          setErrorState({ session: null, integration: null });
-        }
-
-        return clientSecret;
-      } catch (error) {
-        console.error("Failed to create ChatKit session", error);
-        const detail =
-          error instanceof Error
-            ? error.message
-            : "Unable to start ChatKit session.";
-        if (isMountedRef.current) {
-          setErrorState({ session: detail, retryable: false });
-        }
-        throw error instanceof Error ? error : new Error(detail);
-      } finally {
-        if (isMountedRef.current && !currentSecret) {
-          setIsInitializingSession(false);
-        }
+      return clientSecret;
+    } catch (error) {
+      console.error("Failed to create ChatKit session", error);
+      const detail =
+        error instanceof Error
+          ? error.message
+          : "Unable to start ChatKit session.";
+      if (isMountedRef.current) {
+        setErrorState({ session: detail, retryable: false });
       }
-    },
-    [isWorkflowConfigured, setErrorState]
-  );
+      throw error instanceof Error ? error : new Error(detail);
+    } finally {
+      if (isMountedRef.current) {
+        setIsInitializingSession(false);
+      }
+    }
+  }, [isWorkflowConfigured, setErrorState]);
 
   const chatkit = useChatKit({
     api: { getClientSecret },
@@ -319,20 +277,43 @@ export function ChatKitPanel({
     onResponseEnd: () => {
       onResponseEnd();
     },
-    onResponseStart: () => {
-      setErrorState({ integration: null, retryable: false });
-    },
-    onThreadChange: () => {
-      processedFacts.current.clear();
-    },
-    onError: ({ error }: { error: unknown }) => {
-      // Note that Chatkit UI handles errors for your users.
-      // Thus, your app code doesn't need to display errors on UI.
-      console.error("ChatKit error", error);
+    onThreadItem: (event) => {
+      if (!event || typeof event !== "object") {
+        return;
+      }
+      if (event.type === "response.completed") {
+        onResponseEnd();
+      }
     },
   });
 
-  const { sendUserMessage, setComposerValue, focusComposer } = chatkit;
+  const handleResetChat = useCallback(async () => {
+    processedFacts.current.clear();
+    setErrors(createInitialErrors());
+    setIsInitializingSession(true);
+    setWidgetInstanceKey((value) => value + 1);
+  }, []);
+
+  const {
+    focusComposer,
+    sendUserMessage,
+    setComposerValue,
+    control: chatKitControl,
+  } = chatkit;
+
+  useEffect(() => {
+    if (!chatKitControl) {
+      return;
+    }
+
+    chatKitControl.options = {
+      ...chatKitControl.options,
+      theme: {
+        colorScheme: theme,
+        ...getThemeConfig(theme),
+      },
+    };
+  }, [chatKitControl, theme]);
 
   const activeError = errors.session ?? errors.integration;
   const blockingError = errors.script ?? activeError;

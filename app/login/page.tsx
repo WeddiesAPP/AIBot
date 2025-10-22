@@ -1,15 +1,13 @@
+import Image from "next/image";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LoginForm } from "./LoginForm";
-import {
-  getSessionCookieName,
-  verifySessionToken,
-} from "@/lib/auth";
+import { getSessionCookieName, verifySessionToken } from "@/lib/auth";
 
 export const metadata = {
   title: "Inloggen",
   description:
-    "Log in om toegang te krijgen tot het juiste usage dashboard voor jouw organisatie.",
+    "Log in om toegang te krijgen tot het juiste dashboard voor jouw organisatie.",
 };
 
 export default async function LoginPage() {
@@ -22,21 +20,60 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 px-4 py-12 text-slate-900">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(79,70,229,0.08),_transparent_60%)]" />
-      <div className="relative w-full max-w-xl space-y-8">
-        <div className="text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
-            Finance Portaal
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold text-slate-900">
-            Welkom terug
-          </h1>
-          <p className="mt-2 text-sm text-slate-500">
-            Meld je aan om gebruiksinformatie en kosten per bedrijf te bekijken.
-          </p>
-        </div>
-        <LoginForm />
+    <main className="relative min-h-screen overflow-hidden bg-white text-[#0B1220]">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col px-8 py-10 sm:px-14">
+        <header className="flex flex-wrap items-center justify-between gap-8">
+          <div className="flex items-center gap-5">
+            <Image
+              src="/dblabs.png"
+              alt="DB Labs logo"
+              width={140}
+              height={40}
+              priority
+            />
+            <div>
+              <p className="text-[0.76rem] uppercase tracking-[0.48em] text-[#6F7BCB]">
+                DBLabs Portaal
+              </p>
+              <h1 className="text-[1.32rem] font-semibold leading-tight text-[#0B1220]">
+                Welkom terug
+              </h1>
+            </div>
+          </div>
+        </header>
+
+        <section className="flex flex-1 flex-col items-center justify-center gap-8 text-center">
+          <div className="space-y-4 max-w-xl">
+            
+              <span className="h-2 w-2 rounded-full bg-[#20b931] animate-pulse" />
+           
+            <h2 className="text-[21px] font-semibold leading-[1.22] text-[#101936]">
+              Meld je aan om toegang te krijgen tot de chatbot.
+            </h2>
+            
+          </div>
+          <LoginForm />
+        </section>
+
+        <footer className="mt-8 border-t border-slate-200 pt-5 text-xs text-[#8892B0]">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/dblabs.png"
+                alt="DB Labs logo"
+                width={120}
+                height={32}
+              />
+              <p>&copy; {new Date().getFullYear()} DBLabs - Alleen intern gebruik</p>
+            </div>
+            <a
+              href="mailto:douwe.brink@gmail.com"
+              className="rounded-full border border-transparent bg-[#E7ECFF] px-4 py-1.5 text-[#244BDA] transition hover:bg-[#DDE5F5]"
+            >
+              douwe.brink@gmail.com
+            </a>
+          </div>
+        </footer>
       </div>
     </main>
   );

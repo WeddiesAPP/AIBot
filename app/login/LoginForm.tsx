@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState, useId } from "react";
 import { authenticateAction } from "./actions";
 import type { LoginFormState } from "./actions";
@@ -17,24 +18,22 @@ export function LoginForm() {
   return (
     <form
       action={formAction}
-      className="w-full max-w-md space-y-6 rounded-3xl border border-slate-200 bg-white/90 p-10 shadow-2xl backdrop-blur"
+      className="w-full max-w-md space-y-6 rounded-[26px] border border-[#E0E7FF] bg-white px-8 py-10 text-left shadow-[0_18px_56px_rgba(37,99,235,0.14)] sm:px-12"
     >
-      <div className="space-y-2 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
-          Finance Portaal
-        </p>
-        <h1 className="text-2xl font-semibold text-slate-900">
-          Meld je aan
-        </h1>
-        <p className="text-sm text-slate-500">
-          Vul je bedrijfsgegevens in om toegang te krijgen tot het juiste
-          dashboard.
-        </p>
+      <div className="flex flex-col items-center gap-4 text-center">
+        <Image
+          src="/dblabs.png"
+          alt="DB Labs logo"
+          width={140}
+          height={36}
+          priority
+        />
+        
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-5 text-left">
         <label
-          className="block text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500"
+          className="block text-xs font-semibold uppercase tracking-[0.24em] text-[#5B6B95]"
           htmlFor={usernameId}
         >
           Gebruikersnaam
@@ -45,12 +44,12 @@ export function LoginForm() {
             autoComplete="username"
             data-lpignore="true"
             required
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.6)] focus:border-[#244BDA] focus:outline-none"
+            className="mt-2 w-full rounded-[18px] border border-[#E0E7FF] bg-white px-4 py-3 text-sm text-[#0B1220] shadow-[0_12px_28px_-20px_rgba(15,23,42,0.6)] transition focus:border-[#244BDA] focus:outline-none focus:ring-2 focus:ring-[#C7D2FE]"
           />
         </label>
 
         <label
-          className="block text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500"
+          className="block text-xs font-semibold uppercase tracking-[0.24em] text-[#5B6B95]"
           htmlFor={passwordId}
         >
           Wachtwoord
@@ -61,13 +60,13 @@ export function LoginForm() {
             autoComplete="current-password"
             data-lpignore="true"
             required
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.6)] focus:border-[#244BDA] focus:outline-none"
+            className="mt-2 w-full rounded-[18px] border border-[#E0E7FF] bg-white px-4 py-3 text-sm text-[#0B1220] shadow-[0_12px_28px_-20px_rgba(15,23,42,0.6)] transition focus:border-[#244BDA] focus:outline-none focus:ring-2 focus:ring-[#C7D2FE]"
           />
         </label>
       </div>
 
       {state?.error ? (
-        <p className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600 shadow-sm">
+        <p className="rounded-[18px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600 shadow-sm">
           {state.error}
         </p>
       ) : null}

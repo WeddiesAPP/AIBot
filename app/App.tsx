@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChatKitPanel, type FactAction } from "@/components/ChatKitPanel";
 
 const FALLBACK_PROMPTS = [
@@ -23,6 +23,7 @@ export default function App({
   prompts = FALLBACK_PROMPTS,
 }: AppProps) {
   const [queuedPrompt, setQueuedPrompt] = useState<string | null>(null);
+  const [scheme] = useState<"light" | "dark">("light");
 
   const handleWidgetAction = useCallback(async (action: FactAction) => {
     if (process.env.NODE_ENV !== "production") {
@@ -103,9 +104,10 @@ export default function App({
           <div className="w-full max-w-[1024px] transition-transform duration-300 ease-out hover:-translate-y-1">
             <div className="group relative h-[520px] overflow-hidden rounded-[22px] border border-[#E0E7FF] bg-white shadow-[0_14px_40px_rgba(15,23,42,0.08)] transition-shadow duration-300 focus-within:shadow-[0_20px_60px_rgba(37,99,235,0.18)] hover:shadow-[0_18px_56px_rgba(37,99,235,0.14)]">
               <ChatKitPanel
-                theme="light"
+                theme={scheme}
                 onWidgetAction={handleWidgetAction}
                 onResponseEnd={handleResponseEnd}
+                //onThemeRequest={setScheme}
                 selectedPrompt={queuedPrompt}
                 onPromptConsumed={handlePromptConsumed}
               />
@@ -142,8 +144,7 @@ export default function App({
    
 
       <style jsx global>{`
-      :root, html, body { color-scheme: light !important; }
-
+      
         @keyframes fade-in-up {
           0% {
             opacity: 0;
@@ -158,52 +159,46 @@ export default function App({
         .animate-fade-in {
           animation: fade-in-up 1.5s ease-out both;
         }
-
+        .yVugO 
+        {
+        background-color: white !important
+        }
         openai-chatkit button[aria-label="Send"],
         openai-chatkit button[aria-label="Verzenden"] {
           transition: transform 0.18s ease, box-shadow 0.18s ease;
         }
 
-        /* 1) Dwing light UA-styling voor form-controls binnen ChatKit */
-        openai-chatkit,
-        openai-chatkit * {
-          color-scheme: light !important;
-        }
+       /* 1) Dwing light UA-styling voor form-controls binnen ChatKit */
+openai-chatkit, 
+openai-chatkit * {
+  color-scheme: light !important;
+}
 
-        /* 2) Composercontainer volledig wit */
-        openai-chatkit [data-expanded],
-        openai-chatkit [data-expanded] *,
-        openai-chatkit textarea#chatkit-composer-input {
-          background: #ffffff !important;
-          color: #0b1220 !important;
-          border-color: #e5e7eb !important;
-        }
+/* 2) Zet de composer en het textarea visueel in light */
+openai-chatkit .ifWRv,
+openai-chatkit textarea#chatkit-composer-input {
+  background: #ffffff !important;
+  color: #0B1220 !important;
+  border-color: #E5E7EB !important;
+}
 
-        /* 3) Buttons consistent */
-        openai-chatkit button[data-color="primary"][data-variant="solid"],
-        openai-chatkit button[data-color="primary"][data-variant="solid"] * {
-          background: #2563eb !important;
-          color: #ffffff !important;
-          border-color: transparent !important;
-        }
+/* 3) Primary/ghost knoppen expliciet licht maken (zonder reliance op class hashes) */
+openai-chatkit button[data-color="primary"][data-variant="solid"] {
+  background: #2563EB !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
 
-        openai-chatkit button[data-variant="ghost"],
-        openai-chatkit button[data-variant="ghost"] * {
-          background: #ffffff !important;
-          color: #1e293b !important;
-          border-color: rgba(15, 23, 42, 0.08) !important;
-        }
+openai-chatkit button[data-variant="ghost"] {
+  background: #E0E7FF !important;
+  color: #1E293B !important;
+  border-color: transparent !important;
+}
 
-        /* 4) Placeholder en icons */
-        openai-chatkit textarea#chatkit-composer-input::placeholder {
-          color: #64748b !important;
-          opacity: 0.7 !important;
-        }
-
-        openai-chatkit button svg {
-          color: currentColor !important;
-          stroke: currentColor !important;
-        }
+/* 4) Placeholder ook donker genoeg */
+openai-chatkit textarea#chatkit-composer-input::placeholder {
+  color: #64748B !important; /* slate-500-ish */
+}
 
       `}</style>
     </main>
