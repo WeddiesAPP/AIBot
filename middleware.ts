@@ -14,6 +14,24 @@ const PUBLIC_PATHS = new Set<string>([
 ]);
 
 const STATIC_PREFIXES = ["/_next", "/public", "/assets"];
+const STATIC_EXTENSIONS = new Set([
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".gif",
+  ".svg",
+  ".webp",
+  ".ico",
+  ".txt",
+]);
+
+const getPathExtension = (pathname: string): string | null => {
+  const lastDot = pathname.lastIndexOf(".");
+  if (lastDot === -1) {
+    return null;
+  }
+  return pathname.slice(lastDot).toLowerCase();
+};
 
 export async function middleware(request: NextRequest) {
   const usersConfigured = getAuthUsers().length > 0;
@@ -27,7 +45,8 @@ export async function middleware(request: NextRequest) {
 
   if (
     PUBLIC_PATHS.has(pathname) ||
-    STATIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+    STATIC_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
+    STATIC_EXTENSIONS.has(getPathExtension(pathname) ?? "")
   ) {
     return NextResponse.next();
   }
