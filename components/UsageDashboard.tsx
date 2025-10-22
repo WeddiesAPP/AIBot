@@ -64,6 +64,7 @@ export function UsageDashboard() {
   const [queryStartDate, setQueryStartDate] = useState(initialStartDate);
   const [queryEndDate, setQueryEndDate] = useState(initialEndDate);
   const [queryProjectId, setQueryProjectId] = useState(initialProjectId);
+  const [refreshCounter, setRefreshCounter] = useState(0);
   const [usage, setUsage] = useState<UsageResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -141,7 +142,7 @@ export function UsageDashboard() {
       cancelled = true;
       controller.abort();
     };
-  }, [queryStartDate, queryEndDate, queryProjectId]);
+  }, [queryStartDate, queryEndDate, queryProjectId, refreshCounter]);
 
   const sortedDaily = useMemo(() => {
     if (!usage?.daily) {
@@ -170,6 +171,7 @@ export function UsageDashboard() {
     setQueryStartDate(startDate);
     setQueryEndDate(endDate);
     setQueryProjectId(projectId);
+    setRefreshCounter((count) => count + 1);
   }, [endDate, projectId, startDate]);
 
   return (
