@@ -29,7 +29,7 @@ export default async function LoginPage() {
               width={120}
               height='auto'
               loading="eager"
-              className="h-10 w-[140px]"
+              className="w-[120px]"
             />
             <div>
               <p className="text-[0.76rem] uppercase tracking-[0.48em] text-[#6F7BCB]">
@@ -64,7 +64,7 @@ export default async function LoginPage() {
                 width={120}
                 height='auto'
                 loading="eager"
-                className="h-8 w-[120px]"
+                className="w-[120px]"
               />
               <p>&copy; {new Date().getFullYear()} DBLabs - Alleen intern gebruik</p>
             </div>
