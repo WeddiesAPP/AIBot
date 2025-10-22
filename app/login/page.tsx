@@ -18,7 +18,7 @@ export default async function LoginPage() {
   const user = await verifySessionToken(sessionCookie);
 
   if (user) {
-    redirect(user.dashboard);
+    redirect("/");
   }
 
   return (

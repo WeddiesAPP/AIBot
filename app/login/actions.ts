@@ -42,5 +42,5 @@ export async function authenticateAction(
     expires: new Date(session.expiresAt),
   });
 
-  redirect(user.dashboard);
+  redirect("/");
 }

@@ -11,8 +11,6 @@ import {
   getThemeConfig,
 } from "@/lib/config";
 import { ErrorOverlay } from "./ErrorOverlay";
-import type { ColorScheme } from "@/hooks/useColorScheme";
-
 export type FactAction = {
   type: "save";
   factId: string;
@@ -20,7 +18,7 @@ export type FactAction = {
 };
 
 type ChatKitPanelProps = {
-  theme: ColorScheme;
+  theme: "light" | "dark";
   onWidgetAction: (action: FactAction) => Promise<void>;
   onResponseEnd: () => void;
   //onThemeRequest: (scheme: ColorScheme) => void;

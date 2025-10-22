@@ -2,9 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { ChatKitPanel, type FactAction } from "@/components/ChatKitPanel";
-import { useColorScheme } from "@/hooks/useColorScheme";
 
 const FALLBACK_PROMPTS = [
   "Hoe boek ik een factuur?",
@@ -23,13 +22,7 @@ export default function App({
   contactEmail = "douwe.brink@gmail.com",
   prompts = FALLBACK_PROMPTS,
 }: AppProps) {
-  const { scheme, setScheme, setPreference } = useColorScheme("light");
   const [queuedPrompt, setQueuedPrompt] = useState<string | null>(null);
-
-  useEffect(() => {
-    setPreference("light");
-    setScheme("light");
-  }, [setPreference, setScheme]);
 
   const handleWidgetAction = useCallback(async (action: FactAction) => {
     if (process.env.NODE_ENV !== "production") {
@@ -110,10 +103,9 @@ export default function App({
           <div className="w-full max-w-[1024px] transition-transform duration-300 ease-out hover:-translate-y-1">
             <div className="group relative h-[520px] overflow-hidden rounded-[22px] border border-[#E0E7FF] bg-white shadow-[0_14px_40px_rgba(15,23,42,0.08)] transition-shadow duration-300 focus-within:shadow-[0_20px_60px_rgba(37,99,235,0.18)] hover:shadow-[0_18px_56px_rgba(37,99,235,0.14)]">
               <ChatKitPanel
-                theme={scheme}
+                theme="light"
                 onWidgetAction={handleWidgetAction}
                 onResponseEnd={handleResponseEnd}
-                //onThemeRequest={setScheme}
                 selectedPrompt={queuedPrompt}
                 onPromptConsumed={handlePromptConsumed}
               />
@@ -150,6 +142,8 @@ export default function App({
    
 
       <style jsx global>{`
+      :root, html, body { color-scheme: light !important; }
+
         @keyframes fade-in-up {
           0% {
             opacity: 0;
@@ -162,7 +156,7 @@ export default function App({
         }
 
         .animate-fade-in {
-          animation: fade-in-up 0.65s ease-out both;
+          animation: fade-in-up 1.5s ease-out both;
         }
 
         openai-chatkit button[aria-label="Send"],
@@ -170,7 +164,47 @@ export default function App({
           transition: transform 0.18s ease, box-shadow 0.18s ease;
         }
 
-       
+        /* 1) Dwing light UA-styling voor form-controls binnen ChatKit */
+        openai-chatkit,
+        openai-chatkit * {
+          color-scheme: light !important;
+        }
+
+        /* 2) Composercontainer volledig wit */
+        openai-chatkit [data-expanded],
+        openai-chatkit [data-expanded] *,
+        openai-chatkit textarea#chatkit-composer-input {
+          background: #ffffff !important;
+          color: #0b1220 !important;
+          border-color: #e5e7eb !important;
+        }
+
+        /* 3) Buttons consistent */
+        openai-chatkit button[data-color="primary"][data-variant="solid"],
+        openai-chatkit button[data-color="primary"][data-variant="solid"] * {
+          background: #2563eb !important;
+          color: #ffffff !important;
+          border-color: transparent !important;
+        }
+
+        openai-chatkit button[data-variant="ghost"],
+        openai-chatkit button[data-variant="ghost"] * {
+          background: #ffffff !important;
+          color: #1e293b !important;
+          border-color: rgba(15, 23, 42, 0.08) !important;
+        }
+
+        /* 4) Placeholder en icons */
+        openai-chatkit textarea#chatkit-composer-input::placeholder {
+          color: #64748b !important;
+          opacity: 0.7 !important;
+        }
+
+        openai-chatkit button svg {
+          color: currentColor !important;
+          stroke: currentColor !important;
+        }
+
       `}</style>
     </main>
   );
