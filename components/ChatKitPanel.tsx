@@ -277,14 +277,6 @@ export function ChatKitPanel({
     onResponseEnd: () => {
       onResponseEnd();
     },
-    onThreadItem: (event) => {
-      if (!event || typeof event !== "object") {
-        return;
-      }
-      if (event.type === "response.completed") {
-        onResponseEnd();
-      }
-    },
   });
 
   const handleResetChat = useCallback(async () => {

@@ -17,8 +17,15 @@ export const PLACEHOLDER_INPUT = "Typ je vraag over Finance RBBLS...";
 
 export const GREETING = "Waar kan ik je vandaag mee helpen?";
 
-export const getThemeConfig = (_theme: ColorScheme): ThemeOption => ({
-  radius: "round",
-  // Add other theme options here
-  // chatkit.studio/playground to explore config options
-});
+export const getThemeConfig = (theme: ColorScheme): ThemeOption =>
+  theme === "light"
+    ? {
+        radius: "round",
+        // Add other theme options here
+        // chatkit.studio/playground to explore config options
+      }
+    : {
+        radius: "round",
+        // Add other theme options here
+        // chatkit.studio/playground to explore config options
+      };
