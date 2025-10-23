@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
+import { LogoutButton } from "./LogoutButton";
 
 type DailyUsage = {
   date: string;
@@ -186,18 +187,24 @@ export function UsageDashboard({
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-white text-[#0B1220]">
+      <a
+        href="#dashboard-main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:text-[#1D4ED8] focus:shadow-[0_12px_24px_rgba(15,23,42,0.18)]"
+      >
+        Direct naar dashboardinhoud
+      </a>
       <div className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col px-8 py-8 sm:px-14">
-      <header className="flex flex-wrap items-center justify-between gap-8">
-      <div className="flex items-center gap-5">
-             <Image
-                          src="/red-black.svg"
-                          alt="Finance RBBLS logo"
-                          width={74}
-                          height={74}
-                          priority
-                        />
-                        <div>
-                        <p className="text-[0.76rem] uppercase tracking-[0.48em] text-[#6F7BCB]">
+        <header className="flex flex-wrap items-center justify-between gap-8" role="banner">
+          <div className="flex items-center gap-5">
+            <Image
+              src="/red-black.svg"
+              alt="Finance RBBLS logo"
+              width={74}
+              height={74}
+              priority
+            />
+            <div>
+              <p className="text-[0.76rem] uppercase tracking-[0.48em] text-[#6F7BCB]">
                 {companyLabel}
               </p>
               <h1 className="text-[1.32rem] font-semibold leading-tight text-[#0B1220]">
@@ -205,16 +212,26 @@ export function UsageDashboard({
               </h1>
             </div>
           </div>
-          <Link
-            href="/"
-             className="rounded-full border border-transparent bg-[#2563EB] px-5 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_-18px_rgba(37,99,235,0.9)] transition hover:bg-[#1D4ED8] hover:shadow-[0_18px_48px_-16px_rgba(37,99,235,0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7D2FE]"
+          <nav
+            aria-label="Dashboard navigatie"
+            className="flex items-center gap-3"
           >
-            Terug naar assistent
-          </Link>
+            <Link
+              href="/"
+              className="rounded-full border border-transparent bg-[#2563EB] px-5 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_-18px_rgba(37,99,235,0.9)] transition hover:bg-[#1D4ED8] hover:shadow-[0_18px_48px_-16px_rgba(37,99,235,0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7D2FE]"
+            >
+              Terug naar assistent
+            </Link>
+            <LogoutButton className="px-4 py-1.5 text-xs" ariaLabel="Uitloggen en dashboard sluiten" />
+          </nav>
         </header>
 
-        <section className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
-          <div className="space-y-4 rounded-[30px]  bg-white px-6 py-10 animate-fade-in sm:px-12">
+        <section
+          id="dashboard-main"
+          className="flex flex-1 flex-col items-center justify-center gap-6 text-center"
+          aria-labelledby="dashboard-overview-title"
+        >
+          <div className="space-y-4 rounded-[30px]  bg-white px-6 animate-fade-in sm:px-12">
             <span className="inline-flex items-center gap-2 rounded-full border border-[#c7d2ff] bg-white/75 px-5 py-1 text-xs font-semibold uppercase tracking-[0.34em] text-[#4654a3] shadow-[0_12px_28px_-18px_rgba(30,58,138,0.55)]">
               Rapportage & Inzage
               <span className="h-2 w-2 rounded-full bg-[#244BDA]" />
@@ -277,7 +294,10 @@ export function UsageDashboard({
           </p>
         </section>
 
-        <footer className="mt-6 border-t border-slate-200 pt-5 text-xs text-[#8892B0]">
+        <footer
+          className="mt-6 border-t border-slate-200 pt-5 text-xs text-[#8892B0]"
+          role="contentinfo"
+        >
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <Image
@@ -288,12 +308,14 @@ export function UsageDashboard({
               />
               <p>&copy; {new Date().getFullYear()} {companyLabel} - Alleen intern gebruik</p>
             </div>
-            <a
-              href="mailto:douwe.brink@gmail.com"
-              className="rounded-full border border-transparent bg-[#E8EEF9] px-4 py-1.5 text-slate-600 transition hover:bg-[#DDE5F5]"
-            >
-              douwe.brink@gmail.com
-            </a>
+            <address className="not-italic">
+              <a
+                href="mailto:douwe.brink@gmail.com"
+                className="rounded-full border border-transparent bg-[#E8EEF9] px-4 py-1.5 text-slate-600 transition hover:bg-[#DDE5F5]"
+              >
+                douwe.brink@gmail.com
+              </a>
+            </address>
           </div>
         </footer>
       </div>

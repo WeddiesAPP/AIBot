@@ -20,8 +20,14 @@ export default async function LoginPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-white text-[#0B1220]">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col px-8 py-10 sm:px-14">
-        <header className="flex flex-wrap items-center justify-between gap-8">
+      <a
+        href="#login-main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:text-[#1D4ED8] focus:shadow-[0_12px_24px_rgba(15,23,42,0.18)]"
+      >
+        Direct naar inlogformulier
+      </a>
+      <div className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col px-8 sm:px-14">
+        <header className="flex flex-wrap items-center justify-between gap-8" role="banner">
           <div className="flex items-center gap-5">
             <img
               src="/dblabs.png"
@@ -42,12 +48,19 @@ export default async function LoginPage() {
           </div>
         </header>
 
-        <section className="flex flex-1 flex-col items-center justify-center gap-8 text-center">
+        <section
+          id="login-main"
+          className="flex flex-1 flex-col items-center justify-center gap-8 text-center"
+          aria-labelledby="login-heading"
+        >
           <div className="space-y-4 max-w-xl">
             
               <span className="h-2 w-2 rounded-full bg-[#20b931] animate-pulse" />
            
-            <h2 className="text-[21px] font-semibold leading-[1.22] text-[#101936]">
+            <h2
+              id="login-heading"
+              className="text-[21px] font-semibold leading-[1.22] text-[#101936]"
+            >
               Meld je aan om toegang te krijgen tot de chatbot.
             </h2>
             
@@ -55,7 +68,10 @@ export default async function LoginPage() {
           <LoginForm />
         </section>
 
-        <footer className="mt-8 border-t border-slate-200 pt-5 text-xs text-[#8892B0]">
+        <footer
+          className="mt-8 border-t border-slate-200 pt-5 text-xs text-[#8892B0]"
+          role="contentinfo"
+        >
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <img
@@ -68,12 +84,14 @@ export default async function LoginPage() {
               />
               <p>&copy; {new Date().getFullYear()} DBLabs - Alleen intern gebruik</p>
             </div>
-            <a
-              href="mailto:douwe.brink@gmail.com"
-              className="rounded-full border border-transparent bg-[#E7ECFF] px-4 py-1.5 text-[#244BDA] transition hover:bg-[#DDE5F5]"
-            >
-              douwe.brink@gmail.com
-            </a>
+            <address className="not-italic">
+              <a
+                href="mailto:douwe.brink@gmail.com"
+                className="rounded-full border border-transparent bg-[#E7ECFF] px-4 py-1.5 text-[#244BDA] transition hover:bg-[#DDE5F5]"
+              >
+                douwe.brink@gmail.com
+              </a>
+            </address>
           </div>
         </footer>
       </div>

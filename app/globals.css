@@ -12,6 +12,7 @@
   color-scheme: dark;
 }
 
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-color-scheme]) {
     --background: #0a0a0a;
