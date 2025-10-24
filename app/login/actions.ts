@@ -23,7 +23,7 @@ export async function authenticateAction(
     return { error: "Vul zowel gebruikersnaam als wachtwoord in." };
   }
 
-  const user = verifyCredentials(username, password);
+  const user = await verifyCredentials(username, password);
   if (!user) {
     return { error: "Ongeldige gebruikersnaam of wachtwoord." };
   }
@@ -42,5 +42,5 @@ export async function authenticateAction(
     expires: new Date(session.expiresAt),
   });
 
-  redirect("/");
+  redirect(user.dashboard ?? "/dashboard");
 }

@@ -1,3 +1,11 @@
+import { compare } from "bcryptjs";
+import {
+  USE_DATABASE,
+  getAuthSecretFromEnv,
+  isAuthConfigured as baseIsAuthConfigured,
+} from "./auth-config";
+import { query } from "./db";
+
 type RawAuthUser = {
   username?: string;
   password?: string;
@@ -7,20 +15,33 @@ type RawAuthUser = {
   projectId?: string;
 };
 
+type AuthUserRow = {
+  username: string;
+  password_hash: string;
+  company: string;
+  dashboard_path: string | null;
+  label: string | null;
+  project_id: string | null;
+  is_active: boolean | null;
+};
+
 export type AuthUser = {
   username: string;
-  password: string;
+  passwordHash: string;
   company: string;
   dashboard: string;
   label: string;
   projectId?: string;
 };
 
-export type AuthenticatedUser = Omit<AuthUser, "password">;
+export type AuthenticatedUser = Omit<AuthUser, "passwordHash">;
 
 const SESSION_COOKIE_NAME = "ck_session";
 const DEFAULT_SESSION_TTL_SECONDS = 60 * 60 * 8; // 8 hours
 const encoder = new TextEncoder();
+
+const AUTH_USERS_TABLE = resolveTableName(process.env.AUTH_USERS_TABLE);
+
 const globalBuffer =
   typeof globalThis !== "undefined" &&
   typeof (globalThis as Record<string, unknown>).Buffer !== "undefined"
@@ -32,27 +53,66 @@ const globalBuffer =
       })
     : undefined;
 
-let cachedUsers: AuthUser[] | null = null;
+let cachedEnvUsers: AuthUser[] | null = null;
 let cachedSecret: string | null | undefined;
 let hmacKeyPromise: Promise<CryptoKey> | null = null;
+
+function resolveTableName(value: string | undefined | null): string {
+  const raw = value?.trim();
+  if (!raw) {
+    return "auth_users";
+  }
+  const sanitized = raw
+    .split(".")
+    .map((part) => part.replace(/[^a-zA-Z0-9_]/g, ""))
+    .filter(Boolean)
+    .join(".");
+  return sanitized.length > 0 ? sanitized : "auth_users";
+}
+
+function normalizeDashboardPath(
+  provided: string | null | undefined,
+  company: string
+): string {
+  if (provided && provided.trim()) {
+    const trimmed = provided.trim();
+    return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  }
+  return `/dashboard/${company}`;
+}
+
+function mapRowToAuthUser(row: AuthUserRow): AuthUser {
+  return {
+    username: row.username,
+    passwordHash: row.password_hash,
+    company: row.company,
+    dashboard: normalizeDashboardPath(row.dashboard_path, row.company),
+    label: row.label ?? row.company,
+    projectId: row.project_id ?? undefined,
+  };
+}
 
 function getAuthSecret(): string | null {
   if (cachedSecret !== undefined) {
     return cachedSecret;
   }
-  cachedSecret = process.env.AUTH_SECRET?.trim() || null;
+  cachedSecret = getAuthSecretFromEnv();
   return cachedSecret;
 }
 
-function parseUsers(): AuthUser[] {
-  if (cachedUsers) {
-    return cachedUsers;
+function parseEnvUsers(): AuthUser[] {
+  if (USE_DATABASE) {
+    return [];
+  }
+
+  if (cachedEnvUsers) {
+    return cachedEnvUsers;
   }
 
   const rawConfig = process.env.AUTH_USERS;
   if (!rawConfig) {
-    cachedUsers = [];
-    return cachedUsers;
+    cachedEnvUsers = [];
+    return cachedEnvUsers;
   }
 
   let parsed: unknown;
@@ -60,14 +120,14 @@ function parseUsers(): AuthUser[] {
     parsed = JSON.parse(rawConfig);
   } catch (error) {
     console.error("AUTH_USERS kon niet geparse worden als JSON:", error);
-    cachedUsers = [];
-    return cachedUsers;
+    cachedEnvUsers = [];
+    return cachedEnvUsers;
   }
 
   if (!Array.isArray(parsed)) {
     console.error("AUTH_USERS moet een array zijn van gebruikersobjecten.");
-    cachedUsers = [];
-    return cachedUsers;
+    cachedEnvUsers = [];
+    return cachedEnvUsers;
   }
 
   const users: AuthUser[] = [];
@@ -81,18 +141,12 @@ function parseUsers(): AuthUser[] {
       continue;
     }
 
-    let dashboard = entry.dashboard?.trim();
-    if (!dashboard) {
-      dashboard = `/dashboard/${company}`;
-    } else if (!dashboard.startsWith("/")) {
-      dashboard = `/${dashboard}`;
-    }
-
+    const dashboard = normalizeDashboardPath(entry.dashboard, company);
     const label = entry.label?.trim() || company;
 
     users.push({
       username,
-      password,
+      passwordHash: password,
       company,
       dashboard,
       label,
@@ -100,38 +154,111 @@ function parseUsers(): AuthUser[] {
     });
   }
 
-  cachedUsers = users;
-  return cachedUsers;
+  cachedEnvUsers = users;
+  return cachedEnvUsers;
 }
 
-export function getAuthUsers(): AuthUser[] {
-  return parseUsers();
+async function dbFindUserByUsername(username: string): Promise<AuthUser | null> {
+  const trimmed = username.trim();
+  if (!trimmed) {
+    return null;
+  }
+  try {
+    const result = await query<AuthUserRow>(
+      `SELECT username, password_hash, company, dashboard_path, label, project_id, COALESCE(is_active, true) AS is_active
+       FROM ${AUTH_USERS_TABLE}
+       WHERE username = $1
+       LIMIT 1`,
+      [trimmed]
+    );
+    if (result.rowCount === 0) {
+      return null;
+    }
+    const row = result.rows[0];
+    if (row.is_active === false) {
+      return null;
+    }
+    return mapRowToAuthUser(row);
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[auth] kon gebruiker niet ophalen op username", error);
+    }
+    return null;
+  }
 }
 
-export function findUserByUsername(username: string): AuthUser | undefined {
-  return parseUsers().find((user) => user.username === username);
+async function dbFindUserByCompany(company: string): Promise<AuthUser | null> {
+  const trimmed = company.trim();
+  if (!trimmed) {
+    return null;
+  }
+  try {
+    const result = await query<AuthUserRow>(
+      `SELECT username, password_hash, company, dashboard_path, label, project_id, COALESCE(is_active, true) AS is_active
+       FROM ${AUTH_USERS_TABLE}
+       WHERE company = $1
+       LIMIT 1`,
+      [trimmed]
+    );
+    if (result.rowCount === 0) {
+      return null;
+    }
+    const row = result.rows[0];
+    if (row.is_active === false) {
+      return null;
+    }
+    return mapRowToAuthUser(row);
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[auth] kon gebruiker niet ophalen op company", error);
+    }
+    return null;
+  }
 }
 
-export function findUserByCompany(company: string): AuthUser | undefined {
-  return parseUsers().find((user) => user.company === company);
+export const isAuthConfigured = baseIsAuthConfigured;
+
+export async function findUserByUsername(
+  username: string
+): Promise<AuthUser | null> {
+  if (USE_DATABASE) {
+    return dbFindUserByUsername(username);
+  }
+  return parseEnvUsers().find((user) => user.username === username) ?? null;
 }
 
-export function verifyCredentials(
+export async function findUserByCompany(
+  company: string
+): Promise<AuthUser | null> {
+  if (USE_DATABASE) {
+    return dbFindUserByCompany(company);
+  }
+  return parseEnvUsers().find((user) => user.company === company) ?? null;
+}
+
+export async function verifyCredentials(
   username: string,
   password: string
-): AuthenticatedUser | null {
-  const match = findUserByUsername(username);
+): Promise<AuthenticatedUser | null> {
+  const match = await findUserByUsername(username);
   if (!match) {
     return null;
   }
 
-  if (match.password !== password) {
+  const passwordLooksHashed = match.passwordHash.startsWith("$2");
+
+  if (USE_DATABASE || passwordLooksHashed) {
+    const valid = await compare(password, match.passwordHash);
+    if (!valid) {
+      return null;
+    }
+  } else if (match.passwordHash !== password) {
     return null;
   }
 
-  const { password: _password, ...rest } = match;
-  void _password;
-  return rest;
+  const { passwordHash: _ignored, ...user } = match;
+  void _ignored;
+  return user;
 }
 
 function getSessionTtl(): number {
@@ -261,13 +388,13 @@ export async function verifySessionToken(
     return null;
   }
 
-  const match = findUserByUsername(username);
+  const match = await findUserByUsername(username);
   if (!match) {
     return null;
   }
 
-  const { password: _password, ...user } = match;
-  void _password;
+  const { passwordHash: _ignored, ...user } = match;
+  void _ignored;
   return user;
 }
 

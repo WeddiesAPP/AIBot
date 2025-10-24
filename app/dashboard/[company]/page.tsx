@@ -15,7 +15,7 @@ export default async function CompanyDashboardPage({
   params,
 }: DashboardPageProps) {
   const { company } = await params;
-  const config = findUserByCompany(company);
+  const config = await findUserByCompany(company);
   if (!config) {
     notFound();
   }

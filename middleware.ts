@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import {
-  getAuthUsers,
-  getSessionCookieName,
-  verifySessionToken,
-} from "@/lib/auth";
+import { getSessionCookieName, verifySessionToken } from "@/lib/auth";
+import { isAuthConfigured } from "@/lib/auth-config";
 
 const PUBLIC_PATHS = new Set<string>([
+  "/",
   "/login",
   "/favicon.ico",
   "/icon.ico",
@@ -34,10 +32,7 @@ const getPathExtension = (pathname: string): string | null => {
 };
 
 export async function middleware(request: NextRequest) {
-  const usersConfigured = getAuthUsers().length > 0;
-  const hasSecret = Boolean(process.env.AUTH_SECRET);
-
-  if (!usersConfigured || !hasSecret) {
+  if (!isAuthConfigured()) {
     return NextResponse.next();
   }
 
@@ -57,7 +52,7 @@ export async function middleware(request: NextRequest) {
 
   if (user) {
     if (pathname === "/login") {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/chat", request.url));
     }
     if (pathname === "/dashboard") {
       return NextResponse.redirect(new URL(user.dashboard, request.url));
@@ -83,4 +78,5 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico|api/public).*)"],
+  runtime: "nodejs",
 };

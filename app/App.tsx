@@ -33,6 +33,8 @@ type AppProps = {
   companyName: string;
   contactEmail?: string;
   prompts?: string[];
+  isAuthenticated?: boolean;
+  dashboardHref?: string;
 };
 
 const VISIBLE_PROMPT_COUNT = 2;
@@ -43,6 +45,8 @@ export default function App({
   companyName,
   contactEmail = "douwe.brink@gmail.com",
   prompts = FALLBACK_PROMPTS,
+  isAuthenticated = false,
+  dashboardHref = "/dashboard",
 }: AppProps) {
   const [queuedPrompt, setQueuedPrompt] = useState<string | null>(null);
   const [scheme] = useState<"light" | "dark">("light");
@@ -172,13 +176,32 @@ export default function App({
             aria-label="Primaire navigatie"
             className="flex items-center gap-3"
           >
-            <Link
-              href="/dashboard"
-              className="rounded-full border border-transparent bg-[#2563EB] px-5 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_-18px_rgba(37,99,235,0.9)] transition hover:bg-[#1D4ED8] hover:shadow-[0_18px_48px_-16px_rgba(37,99,235,0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7D2FE]"
-            >
-              Gebruiksdashboard
-            </Link>
-            <LogoutButton className="px-4 py-1.5 text-xs" ariaLabel="Uitloggen en sessie beëindigen" />
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href={dashboardHref}
+                  className="rounded-full border border-transparent bg-[#2563EB] px-5 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_-18px_rgba(37,99,235,0.9)] transition hover:bg-[#1D4ED8] hover:shadow-[0_18px_48px_-16px_rgba(37,99,235,0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7D2FE]"
+                >
+                  Gebruiksdashboard
+                </Link>
+                <LogoutButton className="px-4 py-1.5 text-xs" ariaLabel="Uitloggen en sessie beeindigen" />
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="rounded-full border border-transparent bg-[#2563EB] px-5 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_-18px_rgba(37,99,235,0.9)] transition hover:bg-[#1D4ED8] hover:shadow-[0_18px_48px_-16px_rgba(37,99,235,0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7D2FE]"
+                >
+                  Inloggen
+                </Link>
+                <a
+                  href={`mailto:${contactEmail}`}
+                  className="rounded-full border border-[#D7DDF2] bg-white/80 px-4 py-1.5 text-xs font-semibold text-[#1D3A8A] shadow-sm transition hover:border-[#A9B6E5] hover:text-[#1B2E72]"
+                >
+                  Contact
+                </a>
+              </>
+            )}
           </nav>
         </header>
 
@@ -358,5 +381,9 @@ openai-chatkit textarea#chatkit-composer-input::placeholder {
     </main>
   );
 }
+
+
+
+
 
 

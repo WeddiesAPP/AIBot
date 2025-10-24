@@ -1,3 +1,5 @@
+﻿import Image from "next/image";
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LoginForm } from "./LoginForm";
@@ -15,86 +17,87 @@ export default async function LoginPage() {
   const user = await verifySessionToken(sessionCookie);
 
   if (user) {
-    redirect("/");
+    redirect("/chat");
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-white text-[#0B1220]">
-      <a
-        href="#login-main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:text-[#1D4ED8] focus:shadow-[0_12px_24px_rgba(15,23,42,0.18)]"
-      >
-        Direct naar inlogformulier
-      </a>
-      <div className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col px-8 sm:px-14">
-        <header className="flex flex-wrap items-center justify-between gap-8" role="banner">
-          <div className="flex items-center gap-5">
-            <img
+    <div className="min-h-screen bg-gradient-to-b from-[#f4f7ff] via-[#eef2ff] to-[#e7ecff] text-slate-900">
+      <header className="main-header">
+        <div className="main-header__inner">
+          <Link
+            href="/"
+            className="flex items-center gap-3 text-lg font-semibold tracking-tight text-slate-900"
+          >
+            <Image
               src="/dblabs.png"
               alt="DB Labs logo"
               width={120}
-              height='auto'
-              loading="eager"
-              className="w-[120px]"
+              height={36}
+              priority
+              className="h-9 w-auto"
             />
-            <div>
-              <p className="text-[0.76rem] uppercase tracking-[0.48em] text-[#6F7BCB]">
-                DBLabs Portaal
-              </p>
-              <h1 className="text-[1.32rem] font-semibold leading-tight text-[#0B1220]">
-                Welkom terug
-              </h1>
-            </div>
-          </div>
-        </header>
-
-        <section
-          id="login-main"
-          className="flex flex-1 flex-col items-center justify-center gap-8 text-center"
-          aria-labelledby="login-heading"
-        >
-          <div className="space-y-4 max-w-xl">
-            
-              <span className="h-2 w-2 rounded-full bg-[#20b931] animate-pulse" />
-           
-            <h2
-              id="login-heading"
-              className="text-[21px] font-semibold leading-[1.22] text-[#101936]"
+          </Link>
+          <nav className="main-header__nav">
+            <Link href="/#chatbot">Chatbot</Link>
+            <Link href="/#aanpak">Aanpak</Link>
+            <Link href="/#voorbeelden">Voorbeeld</Link>
+            <Link href="/#faq">FAQ</Link>
+          </nav>
+          <div className="main-header__actions">
+            <Link
+              href="/"
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-indigo-500 hover:text-indigo-600"
             >
-              Meld je aan om toegang te krijgen tot de chatbot.
-            </h2>
-            
+              Terug naar home
+            </Link>
           </div>
-          <LoginForm />
-        </section>
+        </div>
+      </header>
 
-        <footer
-          className="mt-8 border-t border-slate-200 pt-5 text-xs text-[#8892B0]"
-          role="contentinfo"
-        >
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <img
-                src="/dblabs.png"
-                alt="DB Labs logo"
-                width={120}
-                height='auto'
-                loading="eager"
-                className="w-[120px]"
-              />
-              <p>&copy; {new Date().getFullYear()} DBLabs - Alleen intern gebruik</p>
-            </div>
-            <address className="not-italic">
-              <a
-                href="mailto:douwe.brink@gmail.com"
-                className="rounded-full border border-transparent bg-[#E7ECFF] px-4 py-1.5 text-[#244BDA] transition hover:bg-[#DDE5F5]"
-              >
-                douwe.brink@gmail.com
-              </a>
-            </address>
+      <main className="mx-auto flex min-h-[70vh] w-full max-w-5xl flex-col items-center gap-10 px-6 py-20 text-center">
+        <span className="glass-badge">
+          <span aria-hidden="true" className="glass-wave">
+            <span className="glass-wave__segment glass-wave__segment--1" />
+            <span className="glass-wave__segment glass-wave__segment--2" />
+            <span className="glass-wave__segment glass-wave__segment--3" />
+          </span>
+          Toegang nodig
+        </span>
+        <div className="max-w-xl space-y-4">
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+            Log in om de assistent en het dashboard te openen
+          </h1>
+          <p className="text-base text-slate-600">
+            Gebruik je persoonlijke gegevens om toegang te krijgen tot je
+            documentassistent, dashboards en uitnodigingen voor collega’s.
+          </p>
+        </div>
+        <LoginForm />
+        <p className="text-sm text-slate-500">
+          Nog geen account? Stuur een bericht naar{" "}
+          <a
+            href="mailto:douwe.brink@gmail.com"
+            className="font-semibold text-indigo-600"
+          >
+            douwe.brink@gmail.com
+          </a>{" "}
+          voor een uitnodiging.
+        </p>
+      </main>
+
+      <footer className="main-footer">
+        <div className="main-footer__inner">
+          <p>&copy; {new Date().getFullYear()} DB Labs. Alle rechten voorbehouden.</p>
+          <div className="main-footer__nav">
+            <Link href="/#chatbot">Chatbot</Link>
+            <Link href="/#aanpak">Aanpak</Link>
+            <Link href="/#voorbeelden">Voorbeeld</Link>
+            <Link href="/#faq">FAQ</Link>
+            <a href="mailto:douwe.brink@gmail.com">Contact</a>
           </div>
-        </footer>
-      </div>
-    </main>
+        </div>
+      </footer>
+    </div>
   );
 }
+

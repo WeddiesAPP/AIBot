@@ -61,6 +61,10 @@ Visit `http://localhost:3000` and start chatting. Use the prompts on the start s
 
 Navigate to `http://localhost:3000/dashboard` to monitor spend, request counts, and token consumption aggregated by day. The page calls the OpenAI [Organization Usage](https://platform.openai.com/docs/api-reference/usage) and [Costs](https://platform.openai.com/docs/api-reference/costs) endpoints through your server, so the admin key never leaves the backend. Use the quick filters or date inputs to refine the reporting window, and optionally scope results to a specific project ID.
 
+### Using a database for authentication
+
+By default the demo reads user credentials from the `AUTH_USERS` JSON environment variable. You can swap this for Vercel Postgres (or another Postgres provider such as Supabase) by setting `AUTH_MODE=database`, creating a database, applying [`db/migrations/001_create_auth_users.sql`](db/migrations/001_create_auth_users.sql) (or running `npm run db:setup` locally after `npx vercel env pull`), and inserting users with `npm run db:seed`. Full setup instructions live in [`docs/auth-database.md`](docs/auth-database.md).
+
 ### 5. Deploy your app
 
 ```bash

@@ -1,30 +1,26 @@
 import { cookies } from "next/headers";
-import App from "./App";
+import { redirect } from "next/navigation";
+import App from "../App";
 import {
   getSessionCookieName,
   verifySessionToken,
 } from "@/lib/auth";
 
-export default async function Home() {
+export default async function ChatPage() {
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get(getSessionCookieName())?.value;
   const user = await verifySessionToken(sessionCookie);
 
-  if (user) {
-    return (
-      <App
-        companyName={user.label}
-        contactEmail="douwe.brink@gmail.com"
-        isAuthenticated
-        dashboardHref={user.dashboard}
-      />
-    );
+  if (!user) {
+    redirect("/login?from=/chat");
   }
 
   return (
     <App
-      companyName="Finance RBBLS"
+      companyName={user.label}
       contactEmail="douwe.brink@gmail.com"
+      isAuthenticated
+      dashboardHref={user.dashboard}
     />
   );
 }
